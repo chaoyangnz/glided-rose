@@ -6,31 +6,31 @@ const TWICE_DEGRADE = 2;
 const THREE_TIMES_DEGRADE = 3;
 
 describe('Gilded Rose', function() {
-  const gildedRose = new GildedRose();
+  const gildedRose: GildedRose = new GildedRose();
 
   beforeEach(() => {
     gildedRose.items = [];
   });
 
-  function daysPassed(n) {
+  function daysPassed(n): Item[] {
+    const previous = cloneDeep(gildedRose.items);
     for (let i = 0; i < n; ++i) {
       gildedRose.updateQuality();
     }
+    return previous;
   }
 
   it('should never update name', function() {
-    const original = [new Item('foo', 9, 6)];
-    gildedRose.items = cloneDeep(original);
-    daysPassed(1);
+    gildedRose.items = [new Item('foo', 9, 6)];
+    const previous = daysPassed(1);
     gildedRose.items.forEach((item, index) => {
-      expect(item.name).toEqual(original[index].name);
-      expect(item.sellIn).toEqual(original[index].sellIn - NORMAL_DEGRADE);
+      expect(item.name).toEqual(previous[index].name);
+      expect(item.sellIn).toEqual(previous[index].sellIn - NORMAL_DEGRADE);
     });
   });
 
   it('should be never more than 50', () => {
-    const original = [new Item('Aged Brie', 1, 50)]; // Aged Brie will increase
-    gildedRose.items = cloneDeep(original);
+    gildedRose.items = [new Item('Aged Brie', 1, 50)]; // Aged Brie will increase;
     daysPassed(10);
     gildedRose.items.forEach(item => {
       expect(item.quality).toBeLessThanOrEqual(50);
@@ -38,8 +38,7 @@ describe('Gilded Rose', function() {
   });
 
   it('should be never negative', () => {
-    const original = [new Item('foo', 0, 1)];
-    gildedRose.items = cloneDeep(original);
+    gildedRose.items = [new Item('foo', 0, 1)];
     daysPassed(10);
     gildedRose.items.forEach(item => {
       expect(item.quality).toBeGreaterThanOrEqual(0);
@@ -47,95 +46,87 @@ describe('Gilded Rose', function() {
   });
 
   it('should degrade twice once the date has passed', () => {
-    const original = [new Item('foo', 10, 16)];
-    gildedRose.items = cloneDeep(original);
-    daysPassed(10 + 1); // 1 days passed
+    gildedRose.items = [new Item('foo', 10, 16)];
+    const previous =  daysPassed(10 + 1); // 1 days passed
     gildedRose.items.forEach((item, index) => {
       expect(item.sellIn).toEqual(
-        original[index].sellIn - 10 * NORMAL_DEGRADE - 1 * NORMAL_DEGRADE
+        previous[index].sellIn - 10 * NORMAL_DEGRADE - 1 * NORMAL_DEGRADE
       );
       expect(item.quality).toEqual(
-        original[index].quality - 10 * NORMAL_DEGRADE - 1 * TWICE_DEGRADE
+        previous[index].quality - 10 * NORMAL_DEGRADE - 1 * TWICE_DEGRADE
       );
     });
   });
 
   it('should never update Quality and sellIn for Sulfuras', () => {
-    const original = [new Item('Sulfuras, Hand of Ragnaros', 9, 6)];
-    gildedRose.items = cloneDeep(original);
-    daysPassed(1);
+    gildedRose.items = [new Item('Sulfuras, Hand of Ragnaros', 9, 6)];
+    const previous = daysPassed(1);
     gildedRose.items.forEach((item, index) => {
-      expect(item.sellIn).toEqual(original[index].sellIn);
-      expect(item.quality).toEqual(original[index].quality);
+      expect(item.sellIn).toEqual(previous[index].sellIn);
+      expect(item.quality).toEqual(previous[index].quality);
     });
   });
 
   it('should increase in Quality the older it gets for Aged Brie', () => {
-    const original = [new Item('Aged Brie', 9, 6)];
-    gildedRose.items = cloneDeep(original);
-    daysPassed(1);
+    gildedRose.items = [new Item('Aged Brie', 9, 6)];
+    const previous = daysPassed(1);
     gildedRose.items.forEach((item, index) => {
-      expect(item.quality).toBeGreaterThan(original[index].quality);
+      expect(item.quality).toBeGreaterThan(previous[index].quality);
     });
   });
 
   it('should increase in quality for Aged Brie', () => {
-    const original = [new Item('Aged Brie', 1, 6)];
-    gildedRose.items = cloneDeep(original);
-    daysPassed(1);
+    gildedRose.items = [new Item('Aged Brie', 1, 6)];
+    const previous =  daysPassed(1);
     gildedRose.items.forEach((item, index) => {
-      expect(item.quality).toBeGreaterThan(original[index].quality);
+      expect(item.quality).toBeGreaterThan(previous[index].quality);
     });
   });
 
   it('should increase in Quality as its SellIn value approaches for Backstage passes', () => {
-    const original = [
+    gildedRose.items = [
       new Item('Backstage passes to a TAFKAL80ETC concert', 15, 10),
     ];
-    gildedRose.items = cloneDeep(original);
-    daysPassed(5); // 11 days left
+    let previous = daysPassed(5); // 11 days left
     gildedRose.items.forEach((item, index) => {
       expect(item.quality).toEqual(
-        original[index].quality + 5 * NORMAL_DEGRADE
+        previous[index].quality + 5 * NORMAL_DEGRADE
       );
     });
-    daysPassed(1); // 10 days left
+    previous = daysPassed(1); // 10 days left
     gildedRose.items.forEach((item, index) => {
       expect(item.quality).toEqual(
-        original[index].quality + 5 * NORMAL_DEGRADE + 1 * TWICE_DEGRADE
+        previous[index].quality + 1 * TWICE_DEGRADE
       );
     });
-    daysPassed(5); // 5 days left
+    previous = daysPassed(5); // 5 days left
     gildedRose.items.forEach((item, index) => {
       expect(item.quality).toEqual(
-        original[index].quality +
-          5 * NORMAL_DEGRADE +
-          5 * TWICE_DEGRADE +
+        previous[index].quality +
+          4 * TWICE_DEGRADE +
           1 * THREE_TIMES_DEGRADE
       );
     });
-    daysPassed(1); // 4 days left
+    previous = daysPassed(1); // 4 days left
     gildedRose.items.forEach((item, index) => {
       expect(item.quality).toEqual(
-        original[index].quality +
-          5 * NORMAL_DEGRADE +
-          5 * TWICE_DEGRADE +
-          2 * THREE_TIMES_DEGRADE
+        previous[index].quality +
+          1 * THREE_TIMES_DEGRADE
       );
     });
-    daysPassed(4); // 0 days left
-    gildedRose.items.forEach((item, index) => {
+    previous = daysPassed(4); // 0 days left
+    gildedRose.items.forEach((item) => {
       expect(item.quality).toEqual(0);
     });
-    daysPassed(1); // 1 days passed
-    gildedRose.items.forEach((item, index) => {
+    previous = daysPassed(1); // 1 days passed
+    gildedRose.items.forEach((item) => {
       expect(item.quality).toEqual(0);
     });
   });
 
   it('should degrade in Quality twice as fast as normal items for Conjured Mana Cake', () => {
-    const original = [new Item('Conjured Mana Cake', 10, 15)];
-    gildedRose.items = cloneDeep(original);
+    const previous = [new Item('Conjured Mana Cake', 10, 15)];
+    gildedRose.items = cloneDeep(previous);
     daysPassed(1);
     gildedRose.items.forEach(item => {
       expect(item.quality).toBeLessThanOrEqual(15 - 1 * TWICE_DEGRADE);
