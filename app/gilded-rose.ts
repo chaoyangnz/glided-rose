@@ -1,3 +1,11 @@
+const MIN_QUALITY = 0;
+const MAX_QUALITY = 50;
+// Odd items
+const AgedBrie = 'Aged Brie';
+const Backstage = 'Backstage passes to a TAFKAL80ETC concert';
+const Sulfuras = 'Sulfuras, Hand of Ragnaros';
+const Conjured = 'Conjured Mana Cake';
+
 export class Item {
   name: string;
   sellIn: number;
@@ -9,24 +17,24 @@ export class Item {
     this.quality = quality;
   }
 
-  shouldDegrade() {
-    return !this.shouldIncrease() && !this.shouldNeverSold();
+  shouldDegrade(): boolean {
+    return !this.shouldIncrease() && !this.shouldNeverUpdate();
   }
 
-  shouldIncrease() {
-    return this.name == OddItems.AgedBrie || this.name == OddItems.Backstage;
+  shouldIncrease(): boolean {
+    return [AgedBrie, Backstage].includes(this.name);
   }
 
-  shouldNeverSold() {
-    return this.name == OddItems.Sulfuras;
+  shouldNeverUpdate(): boolean {
+    return this.name === Sulfuras;
   }
 
-  isDatePassed() {
+  isDatePassed(): boolean {
     return this.sellIn < 0;
   }
 
-  daysOrLessRemaining(n: number) {
-    return this.sellIn < n + 1;
+  daysOrLessRemaining(n: number): boolean {
+    return this.sellIn <= n;
   }
 
   degrade() {
@@ -42,15 +50,6 @@ export class Item {
   }
 }
 
-const MIN_QUALITY = 0;
-const MAX_QUALITY = 50;
-const enum OddItems {
-  AgedBrie = 'Aged Brie',
-  Backstage = 'Backstage passes to a TAFKAL80ETC concert',
-  Sulfuras = 'Sulfuras, Hand of Ragnaros',
-  Conjured = 'Conjured Mana Cake',
-}
-
 export class GildedRose {
   items: Array<Item> = [];
 
@@ -60,13 +59,12 @@ export class GildedRose {
     this.updateQualityWhenDegrade(item);
     this.updateQualityWhenIncrease(item);
     this.updateDate(item);
-    this.handleDatePassed(item);
   }
 
   private updateQualityWhenDegrade(item) {
     if (!item.shouldDegrade()) return;
     item.degrade();
-    if (item.name == OddItems.Conjured) {
+    if (item.name === Conjured) {
       item.degrade();
     }
   }
@@ -74,7 +72,7 @@ export class GildedRose {
   private updateQualityWhenIncrease(item) {
     if (!item.shouldIncrease()) return;
     item.increase();
-    if (item.name == OddItems.Backstage) {
+    if (item.name === Backstage) {
       if (item.daysOrLessRemaining(10)) {
         item.increase();
       }
@@ -85,30 +83,25 @@ export class GildedRose {
   }
 
   private updateDate(item) {
-    if (item.shouldNeverSold()) return;
+    if (item.shouldNeverUpdate()) return;
     item.sellIn -= 1;
+    this.handleDatePassed(item);
   }
 
   private handleDatePassed(item) {
     if (!item.isDatePassed()) return;
     switch (item.name) {
-      case OddItems.Backstage:
-        item.quality = 0;
-        break;
-      case OddItems.AgedBrie:
-        item.increase();
-        break;
+      case Backstage:
+        item.quality = 0; break;
+      case AgedBrie:
+        item.increase(); break;
       default:
-        item.degrade();
-        break;
+        item.degrade(); break;
     }
   }
 
   updateQuality() {
-    for (let i = 0; i < this.items.length; i++) {
-      this.updateItem(this.items[i]);
-    }
-
+    this.items.forEach((item) => this.updateItem(item));
     return this.items;
   }
 }

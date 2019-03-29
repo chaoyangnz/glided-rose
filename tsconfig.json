@@ -4,7 +4,8 @@
         "target": "es5",
         "strict": true,
         "noImplicitAny": false,
-        "sourceMap": false
+        "sourceMap": false,
+        "lib": ["es6", "es2016.array.include"]
     },
     "exclude": [
         "node_modules"
