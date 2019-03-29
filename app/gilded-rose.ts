@@ -23,6 +23,10 @@ const enum OddItem {
     Conjured = ' Conjured Mana Cake'
 }
 
+function daysOrLessRemaining(n: number, item: Item) {
+    return item.sellIn < n + 1;
+}
+
 export class GildedRose {
     items: Array<Item> = [];
 
@@ -31,21 +35,21 @@ export class GildedRose {
     updateItemQuality(item) {
         if (item.name != OddItem.AgedBrie && item.name != OddItem.Backstage) {
             if (item.quality > 0) {
-                if (item.name != 'Sulfuras, Hand of Ragnaros') {
+                if (item.name != OddItem.Sulfuras) {
                     item.quality = item.quality - DEGRADE.NORMAL
                 }
             }
         } else {
             if (item.quality < MAX_QUALITY) {
-                item.quality = item.quality + 1
+                item.quality = item.quality + DEGRADE.NORMAL
                 if (item.name == OddItem.Backstage) {
-                    if (item.sellIn < 11) {
+                    if (daysOrLessRemaining(10, item)) {
                         if (item.quality < MAX_QUALITY) {
                             item.quality = item.quality + DEGRADE.NORMAL
                         }
 
                     }
-                    if (item.sellIn < 6) {
+                    if (daysOrLessRemaining(5, item)) {
                         if (item.quality < MAX_QUALITY) {
                             item.quality = item.quality + DEGRADE.NORMAL
                         }
