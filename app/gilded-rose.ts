@@ -27,6 +27,14 @@ function daysOrLessRemaining(n: number, item: Item) {
     return item.sellIn < n + 1;
 }
 
+function degrade(rate: DEGRADE, item: Item) {
+    item.quality = item.quality - rate;
+}
+
+function increase(rate: DEGRADE, item: Item) {
+    item.quality = item.quality + rate;
+}
+
 export class GildedRose {
     items: Array<Item> = [];
 
@@ -36,22 +44,21 @@ export class GildedRose {
         if (item.name != OddItem.AgedBrie && item.name != OddItem.Backstage) {
             if (item.quality > 0) {
                 if (item.name != OddItem.Sulfuras) {
-                    item.quality = item.quality - DEGRADE.NORMAL
+                    degrade(DEGRADE.NORMAL, item);
                 }
             }
         } else {
             if (item.quality < MAX_QUALITY) {
-                item.quality = item.quality + DEGRADE.NORMAL
+                increase(DEGRADE.NORMAL, item)
                 if (item.name == OddItem.Backstage) {
                     if (daysOrLessRemaining(10, item)) {
                         if (item.quality < MAX_QUALITY) {
-                            item.quality = item.quality + DEGRADE.NORMAL
+                            increase(DEGRADE.NORMAL, item)
                         }
-
                     }
                     if (daysOrLessRemaining(5, item)) {
                         if (item.quality < MAX_QUALITY) {
-                            item.quality = item.quality + DEGRADE.NORMAL
+                            increase(DEGRADE.NORMAL, item)
                         }
                     }
                 }
@@ -65,15 +72,15 @@ export class GildedRose {
                 if (item.name != OddItem.Backstage) {
                     if (item.quality > 0) {
                         if (item.name != OddItem.Sulfuras) {
-                            item.quality = item.quality - DEGRADE.NORMAL
+                            degrade(DEGRADE.NORMAL, item)
                         }
                     }
                 } else {
-                    item.quality = item.quality - item.quality
+                    item.quality = 0
                 }
             } else {
                 if (item.quality < MAX_QUALITY) {
-                    item.quality = item.quality + DEGRADE.NORMAL
+                    increase(DEGRADE.NORMAL, item)
                 }
             }
         }
