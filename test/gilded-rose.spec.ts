@@ -87,49 +87,69 @@ describe('Gilded Rose', function() {
     gildedRose.items = [
       new Item('Backstage passes to a TAFKAL80ETC concert', 15, 10),
     ];
-    let previous = daysPassed(5); // 11 days left
+    // 15 days left
+    let previous = daysPassed(5);
     gildedRose.items.forEach((item, index) => {
       expect(item.quality).toEqual(
         previous[index].quality + 5 * NORMAL_DEGRADE
       );
     });
-    previous = daysPassed(1); // 10 days left
+    // 10 days left
+    previous = daysPassed(1);
     gildedRose.items.forEach((item, index) => {
       expect(item.quality).toEqual(
         previous[index].quality + 1 * TWICE_DEGRADE
       );
     });
-    previous = daysPassed(5); // 5 days left
+    // 9 days left
+    previous = daysPassed(4);
+    gildedRose.items.forEach((item, index) => {
+      expect(item.quality).toEqual(
+          previous[index].quality +
+          4 * TWICE_DEGRADE
+      );
+    });
+    // 5 days left
+    previous = daysPassed(1);
     gildedRose.items.forEach((item, index) => {
       expect(item.quality).toEqual(
         previous[index].quality +
-          4 * TWICE_DEGRADE +
           1 * THREE_TIMES_DEGRADE
       );
     });
-    previous = daysPassed(1); // 4 days left
+    // 4 days left
+    previous = daysPassed(1);
     gildedRose.items.forEach((item, index) => {
       expect(item.quality).toEqual(
         previous[index].quality +
           1 * THREE_TIMES_DEGRADE
       );
     });
-    previous = daysPassed(4); // 0 days left
+    // 3 day left
+    previous = daysPassed(3);
+    gildedRose.items.forEach((item, index) => {
+      expect(item.quality).toEqual(
+          previous[index].quality +
+          3 * THREE_TIMES_DEGRADE);
+    });
+    // 0 days left
+    previous = daysPassed(1);
     gildedRose.items.forEach((item) => {
       expect(item.quality).toEqual(0);
     });
-    previous = daysPassed(1); // 1 days passed
+    // 1 days passed
+    previous = daysPassed(1);
     gildedRose.items.forEach((item) => {
       expect(item.quality).toEqual(0);
     });
+    // 2 days passed
   });
 
   it('should degrade in Quality twice as fast as normal items for Conjured Mana Cake', () => {
-    const previous = [new Item('Conjured Mana Cake', 10, 15)];
-    gildedRose.items = cloneDeep(previous);
-    daysPassed(1);
-    gildedRose.items.forEach(item => {
-      expect(item.quality).toBeLessThanOrEqual(15 - 1 * TWICE_DEGRADE);
+    gildedRose.items = [new Item('Conjured Mana Cake', 10, 15)];
+    const previous = daysPassed(1);
+    gildedRose.items.forEach((item, index) => {
+      expect(item.quality).toBeLessThanOrEqual(previous[index].quality - 1 * TWICE_DEGRADE);
     });
   });
 });
