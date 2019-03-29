@@ -13,7 +13,8 @@ const items = [
     new Item("Conjured Mana Cake", 3, 6)];
 
 
-const gildedRose = new GildedRose(items);
+const gildedRose = new GildedRose();
+gildedRose.items = items;
 var days: number = 2;
 for (let i = 0; i < days; i++) {
     console.log("-------- day " + i + " --------");
