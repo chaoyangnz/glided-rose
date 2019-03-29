@@ -56,7 +56,7 @@ export class GildedRose {
 
   constructor() {}
 
-  updateItemQuality(item) {
+  updateItem(item) {
     this.updateQualityWhenDegrade(item);
     this.updateQualityWhenIncrease(item);
     this.updateDate(item);
@@ -106,7 +106,7 @@ export class GildedRose {
 
   updateQuality() {
     for (let i = 0; i < this.items.length; i++) {
-      this.updateItemQuality(this.items[i]);
+      this.updateItem(this.items[i]);
     }
 
     return this.items;
